@@ -70,7 +70,7 @@ tailwind.config = {
 </div>
 
 <!-- MINI SUMMARY BAR -->
-<div id="mini-bar" class="hidden fixed inset-x-0 z-30 bg-teal/5 border-b border-teal/10" style="top:104px">
+<div id="mini-bar" class="hidden fixed inset-x-0 z-30 bg-teal/5 border-b border-teal/10" style="top:128px">
   <div class="max-w-6xl mx-auto px-6 py-2 flex items-center justify-between flex-wrap gap-2">
     <div id="mini-tags" class="flex flex-wrap gap-1.5 text-xs"></div>
     <button onclick="restart()" class="text-xs text-teal font-medium hover:underline">Start Over</button>
@@ -78,7 +78,7 @@ tailwind.config = {
 </div>
 
 <!-- CONTENT -->
-<main id="main-content" class="pt-40 pb-20 px-4">
+<main id="main-content" class="pt-36 pb-20 px-4">
 <div class="max-w-6xl mx-auto">
 
 <!-- STEP 1 -->
@@ -252,39 +252,21 @@ tailwind.config = {
   </div>
 
   <div class="bg-white rounded-[2rem] pshadow p-6 mb-4">
-    <p class="text-sm font-semibold text-navy mb-4">Delivery Method</p>
-    <div class="grid grid-cols-2 gap-3 mb-4">
-      <div id="del-a" class="sel border-2 border-slate-100 rounded-xl p-4" onclick="delPick('pickup')">
-        <div class="text-lg mb-1">🏪</div>
-        <div class="font-semibold text-sm text-navy mb-1">Store Pickup</div>
-        <div class="text-xs text-slate-400">Ready in 2 hours</div>
-        <div class="text-xs text-teal font-semibold mt-1">Free</div>
-      </div>
-      <div id="del-b" class="sel border-2 border-slate-100 rounded-xl p-4" onclick="delPick('home')">
-        <div class="text-lg mb-1">🚚</div>
-        <div class="font-semibold text-sm text-navy mb-1">Home Delivery</div>
-        <div class="text-xs text-slate-400">3–5 business days</div>
-        <div class="text-xs text-slate-500 font-semibold mt-1">$4.99</div>
-      </div>
-    </div>
-    <div id="pickup-f" class="hidden space-y-2.5">
-      <select class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white">
-        <option value="">Select store location…</option>
-        <option>Manhattan — 123 W 48th St</option>
-        <option>Brooklyn — 456 Ocean Ave</option>
-        <option>Boro Park — 4418 13th Ave</option>
-        <option>Queens — 789 Jamaica Ave</option>
-      </select>
-      <input type="date" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
-    </div>
-    <div id="home-f" class="hidden space-y-2.5">
+    <p class="text-sm font-semibold text-navy mb-1">Shipping Address</p>
+    <p class="text-xs text-slate-400 mb-4">3–5 business days · $4.99 shipping</p>
+    <div class="space-y-2.5">
       <input type="text" placeholder="Street Address" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+      <input type="text" placeholder="Apt / Suite (optional)" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
       <div class="grid grid-cols-2 gap-2.5">
         <input type="text" placeholder="City" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
-        <input type="text" placeholder="ZIP Code" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+        <input type="text" placeholder="State" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
       </div>
-      <div class="text-xs text-teal bg-teal/5 rounded-xl p-3">📦 Delivery: 3–5 business days · $4.99</div>
+      <div class="grid grid-cols-2 gap-2.5">
+        <input type="text" placeholder="ZIP Code" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+        <input type="text" placeholder="Country" value="United States" class="border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+      </div>
     </div>
+    <div class="mt-3 text-xs text-teal bg-teal/5 rounded-xl p-3">📦 Estimated delivery: 3–5 business days</div>
   </div>
 
   <div class="bg-white rounded-[2rem] pshadow p-6 mb-6">
@@ -406,7 +388,7 @@ tailwind.config = {
 </main>
 
 <script>
-const S = { step:1, dest:null, dur:null, svc:null, plan:null, sim:null, dev:null, buyDev:null, del:null, pay:'card', coupon:false };
+const S = { step:1, dest:null, dur:null, svc:null, plan:null, sim:null, dev:null, buyDev:null, del:'home', pay:'card', coupon:false };
 
 const PLANS = {
   israel:[
@@ -488,10 +470,6 @@ function buyDev(id, el){
 
 function delPick(v){
   S.del=v;
-  document.getElementById('del-a').classList.toggle('active',v==='pickup');
-  document.getElementById('del-b').classList.toggle('active',v==='home');
-  document.getElementById('pickup-f').classList.toggle('hidden',v!=='pickup');
-  document.getElementById('home-f').classList.toggle('hidden',v!=='home');
   calcSummary();
 }
 
@@ -534,8 +512,10 @@ function pickPlan(id,el){
 
 function updateMiniBar(){
   const bar=document.getElementById('mini-bar');
+  const main=document.getElementById('main-content');
   if(S.step>1&&S.dest){
     bar.classList.remove('hidden');
+    main.style.paddingTop='10rem'; // pt-40 — clears header + stepper + mini-bar
     const dmap={israel:'🇮🇱 Israel',europe:'🇪🇺 Europe',usa:'🇺🇸 USA',worldwide:'🌍 Worldwide'};
     const smap={data:'Data Only',full:'Talk, Text & Data'};
     document.getElementById('mini-tags').innerHTML=[
@@ -544,7 +524,10 @@ function updateMiniBar(){
       S.svc&&`<span class="bg-white border border-teal/20 text-teal px-2.5 py-1 rounded-full">${smap[S.svc]}</span>`,
       S.plan&&`<span class="bg-white border border-teal/20 text-teal px-2.5 py-1 rounded-full">${S.plan.name} · $${S.plan.price}/mo</span>`,
     ].filter(Boolean).join('');
-  } else bar.classList.add('hidden');
+  } else {
+    bar.classList.add('hidden');
+    main.style.paddingTop='9rem'; // pt-36 — clears header + stepper only
+  }
 }
 
 function calcSummary(){
@@ -552,14 +535,14 @@ function calcSummary(){
   const p=S.plan;
   const sim=S.sim==='new'?4.99:0;
   const dev=S.buyDev?DEV_PRICE[S.buyDev]:0;
-  const del=S.del==='home'?4.99:0;
+  const del=4.99;
   const disc=S.coupon?10:0;
   const tax=+((p.price+sim+del)*0.08).toFixed(2);
   const total=+(p.price+sim+del+tax+dev-disc).toFixed(2);
   document.getElementById('sum-name').textContent=p.name+' · '+p.data;
   document.getElementById('sum-pkg').textContent='$'+p.price+'/mo';
   document.getElementById('sum-sim').textContent=sim?'$'+sim:'Free';
-  document.getElementById('sum-del').textContent=del?'$'+del:'Free';
+  document.getElementById('sum-del').textContent='$4.99';
   document.getElementById('sum-tax').textContent='$'+tax;
   document.getElementById('sum-total').textContent='$'+total;
   document.getElementById('sum-mo').textContent='$'+(p.price+(dev||0)).toFixed(2)+'/mo';
@@ -584,7 +567,7 @@ function complete(){
   document.getElementById('suc-plan').textContent=S.plan?.name||'—';
   document.getElementById('suc-plan-d').textContent=S.plan?S.plan.data+' · $'+S.plan.price+'/mo':'—';
   document.getElementById('suc-sim').textContent=S.sim==='new'?'New SIM — shipping with order':'Using existing SIM';
-  document.getElementById('suc-del').textContent=S.del==='pickup'?'Store Pickup — ready in 2 hours':'Home Delivery — 3–5 business days';
+  document.getElementById('suc-del').textContent='Home Delivery — 3–5 business days';
   document.getElementById('suc-total').textContent=document.getElementById('sum-total').textContent;
   document.getElementById('stepper').closest('.fixed').classList.add('hidden');
   document.getElementById('mini-bar').classList.add('hidden');
@@ -593,7 +576,7 @@ function complete(){
 }
 
 function restart(){
-  Object.assign(S,{step:1,dest:null,dur:null,svc:null,plan:null,sim:null,dev:null,buyDev:null,del:null,pay:'card',coupon:false});
+  Object.assign(S,{step:1,dest:null,dur:null,svc:null,plan:null,sim:null,dev:null,buyDev:null,del:'home',pay:'card',coupon:false});
   document.querySelectorAll('.sel,.pill').forEach(e=>e.classList.remove('active'));
   document.getElementById('stepper').closest('.fixed').classList.remove('hidden');
   document.getElementById('main-content').style.paddingTop='';
